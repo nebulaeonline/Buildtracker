@@ -1,4 +1,4 @@
-"""Verify the default lock timeout and --nolockout against an actual held lock.
+"""Verify the default lock timeout and --nolocktimeout against an actual held lock.
 
 Usage: python tests/lock-wait.py <published-bt-executable>
 Requires only Python's standard library. Each scenario holds a lock for 6 seconds.
@@ -22,14 +22,14 @@ def check_lock_wait(executable, selection, operation, expected):
             started = time.monotonic()
             default = subprocess.Popen(command + operation, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             processes.append(default)
-            unlimited = subprocess.Popen(command + operation + ['--nolockout'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            unlimited = subprocess.Popen(command + operation + ['--nolocktimeout'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             processes.append(unlimited)
             output, error = default.communicate(timeout=12)
             elapsed = time.monotonic() - started
             assert default.returncode == 1 and output == b'' and b'locked' in error, (output, error)
             assert 4 <= elapsed < 12, elapsed
             time.sleep(max(0, 6 - elapsed))
-            assert unlimited.poll() is None, '--nolockout stopped while the lock was held'
+            assert unlimited.poll() is None, '--nolocktimeout stopped while the lock was held'
             connection.rollback()
             output, error = unlimited.communicate(timeout=10)
             assert unlimited.returncode == 0 and output.strip() == expected and not error, (output, error)
@@ -50,4 +50,4 @@ if __name__ == '__main__':
     check_lock_wait(executable, [], [], b'1')
     check_lock_wait(executable, ['--tag', 'api'], [], b'1')
     check_lock_wait(executable, [], ['--noinc'], b'0')
-    print('Default 5-second timeout and --nolockout passed for main/tagged increments and reads.')
+    print('Default 5-second timeout and --nolocktimeout passed for main/tagged increments and reads.')

@@ -4,30 +4,30 @@
 counters in SQLite. Successful counter operations print only the number and a
 newline. Errors print to stderr and exit with code 1.
 
-Database lock waits time out after **5 seconds** by default. Use `--nolockout`
+Database lock waits time out after **5 seconds** by default. Use `--nolocktimeout`
 to wait indefinitely for a lock instead. SQLite locking and atomic increments
 remain enabled; this flag removes the wait timeout. For example:
 
 ```sh
-bt --nolockout
-bt --tag api --nolockout
+bt --nolocktimeout
+bt --tag api --nolocktimeout
 ```
 
-## Download v1.0.2
+## Download v1.0.3
 
 | Platform | Architecture | Download | SHA256 |
 | --- | --- | --- | --- |
-| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-win-x64.zip) | `192f63089649baa160dd166da9e2123f4a34ac75aa739c4dd13d4f3c0e56e1b2` |
-| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-win-arm64.zip) | `61ad9bbc07983858d6ef2644e98786d1d820a17473e3fe17101faa020c4acbcb` |
-| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-linux-x64.tar.gz) | `4a61e6306200edab920dabeed7ccdb2d4fb8bf3c17fe46a9a0a4beaed0aba886` |
-| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-linux-arm64.tar.gz) | `6554309c9d00edb12a9c628bebed1775733ed0bbdd972c8eb4a3f996ccd625fe` |
-| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-osx-x64.tar.gz) | `e403e409df254cb9d8081cfce848a79b3309606582845426b2ae708a0d0039fc` |
-| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-osx-arm64.tar.gz) | `85e2ab27a8f8cfd1cf4255cb74880e52826767b73d1aef518ecaf1a81cff8bd4` |
+| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-win-x64.zip) | `7b0f0c47c1f9b53da372973578f8c4d0c17ec76e6f2d4121a8b69a92f5abe767` |
+| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-win-arm64.zip) | `d111a27ac1fc498b2420485f8f027f03c6779f903fe3ad928c403dcc0a1abd75` |
+| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-linux-x64.tar.gz) | `cff0d91a0c2b305fafe72b0bd9fb407a352ffc286eda553b15e17dae1cb1a39f` |
+| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-linux-arm64.tar.gz) | `49645591e1d4438b930a2883460b2e2d5a68d5823f3d1d2117a381371f3f80d0` |
+| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-osx-x64.tar.gz) | `ab68d11a69c5ff8b9964b6b0dd22fe821de0e86686c6ca706ed348380a3e35e3` |
+| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-osx-arm64.tar.gz) | `71f2bae77fe91ca56629b1ac57173853074993a83434e5bdbf4183c2d70ebf7a` |
 
 Extract the archive and keep the native SQLite library beside `bt.exe` (Windows)
 or `bt` (Linux/macOS). No .NET runtime installation is required.
 The SHA256 values above verify the downloaded archives. See the
-[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.2)
+[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.3)
 for details.
 
 ## Main counter walkthrough
@@ -120,7 +120,7 @@ Quote paths or tags containing spaces.
 | `--init [COUNT]` | Create or reset the selected counter to COUNT (default: 0). |
 | `--reset [COUNT]` | Reset an existing counter to COUNT (default: 0). |
 | `--noinc` | Print the selected counter without changing it. |
-| `--nolockout` | Wait indefinitely for database locks instead of timing out after 5 seconds. |
+| `--nolocktimeout` | Wait indefinitely for database locks instead of timing out after 5 seconds. |
 | `--tag <TAG>` | Select a case-sensitive tagged counter instead of the main counter. |
 | `--root <DIR>` | Use `DIR/.buildtracker`; defaults to the current directory. |
 | `--help`, `-h` | Display usage, options, and examples. |
@@ -159,7 +159,7 @@ requires prior initialization. `--init`, `--reset`, and `--noinc` are mutually
 exclusive. Both initialization and reset print the resulting value.
 Values range from 0 to 9223372036854775807. Overflow fails without changing the
 counter. SQLite performs each increment atomically, including across processes,
-with a 5-second lock wait timeout by default, or no timeout with `--nolockout`.
+with a 5-second lock wait timeout by default, or no timeout with `--nolocktimeout`.
 Avoid resetting counters while builds are running.
 
 ## Shared folders
@@ -194,7 +194,7 @@ Release archives are named `bt-<RID>.zip` for Windows and `bt-<RID>.tar.gz`
 for Linux/macOS. Available targets are `win-x64`, `win-arm64`, `linux-x64`,
 `linux-arm64`, `osx-x64`, and `osx-arm64`. Extract the archive and keep its native
 SQLite library alongside the executable. Linux packages target glibc-based
-distributions, rather than Alpine/musl. The v1.0.2 Linux archives are built on
+distributions, rather than Alpine/musl. The v1.0.3 Linux archives are built on
 Ubuntu 18.04 (glibc 2.27), including a source-built SQLite library, and tested on
 Ubuntu 18.04 and Ubuntu 26.04 for both architectures.
 
@@ -250,7 +250,7 @@ Both scripts cover main and tagged counters, resets, invalid arguments, help,
 overflow, concurrent increments, and execution from subdirectories. They use
 temporary directories and clean up their test databases on exit.
 
-To verify the default timeout and `--nolockout` with real held database locks,
+To verify the default timeout and `--nolocktimeout` with real held database locks,
 run the optional Python standard-library test against a current build:
 
 ```sh

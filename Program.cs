@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 try
 {
     string root = Directory.GetCurrentDirectory(), tag = "";
-    bool init = false, reset = false, noinc = false, nolockout = false;
+    bool init = false, reset = false, noinc = false, nolocktimeout = false;
     long count = 0;
     var seen = new HashSet<string>(StringComparer.Ordinal);
     for (int i = 0; i < args.Length; i++)
@@ -18,7 +18,7 @@ try
                 Console.WriteLine("""
                     Buildtracker - persistent SQLite build counters
 
-                    Usage: bt [--root <DIR>] [--tag <TAG>] [--nolockout] [--init [COUNT] | --reset [COUNT] | --noinc]
+                    Usage: bt [--root <DIR>] [--tag <TAG>] [--nolocktimeout] [--init [COUNT] | --reset [COUNT] | --noinc]
 
                     No operation flag: increment the selected counter and print its value.
                     Lock waits time out after 5 seconds by default.
@@ -27,7 +27,7 @@ try
                     --noinc           Print the current counter without incrementing.
                     --tag <TAG>       Select an independent, case-sensitive counter.
                     --root <DIR>      Store data in DIR/.buildtracker (default: current directory).
-                    --nolockout       Wait indefinitely for database locks; locking stays enabled.
+                    --nolocktimeout   Wait indefinitely for database locks; locking stays enabled.
                     --help, -h        Show this help screen without changing counters.
 
                     Without --tag, select the main counter. COUNT must be an integer from
@@ -48,7 +48,7 @@ try
             case "--root": root = Value(args, ref i, option); break;
             case "--tag": tag = Value(args, ref i, option); break;
             case "--noinc": noinc = true; break;
-            case "--nolockout": nolockout = true; break;
+            case "--nolocktimeout": nolocktimeout = true; break;
             case "--init":
             case "--reset":
                 if (option == "--init") init = true;
@@ -75,7 +75,7 @@ try
         DataSource = database,
         Mode = init ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite,
         Pooling = false,
-        DefaultTimeout = nolockout ? 0 : 5
+        DefaultTimeout = nolocktimeout ? 0 : 5
     }.ToString());
     connection.Open();
     // Acquire the writer reservation before preparing statements, avoiding
