@@ -13,24 +13,34 @@ bt --nolocktimeout
 bt --tag api --nolocktimeout
 ```
 
-## Download v1.0.3
+## Download v1.0.4
 
 | Platform | Architecture | Download | SHA256 |
 | --- | --- | --- | --- |
-| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-win-x64.zip) | `7b0f0c47c1f9b53da372973578f8c4d0c17ec76e6f2d4121a8b69a92f5abe767` |
-| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-win-arm64.zip) | `d111a27ac1fc498b2420485f8f027f03c6779f903fe3ad928c403dcc0a1abd75` |
-| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-linux-x64.tar.gz) | `cff0d91a0c2b305fafe72b0bd9fb407a352ffc286eda553b15e17dae1cb1a39f` |
-| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-linux-arm64.tar.gz) | `49645591e1d4438b930a2883460b2e2d5a68d5823f3d1d2117a381371f3f80d0` |
-| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-osx-x64.tar.gz) | `ab68d11a69c5ff8b9964b6b0dd22fe821de0e86686c6ca706ed348380a3e35e3` |
-| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.3/bt-osx-arm64.tar.gz) | `71f2bae77fe91ca56629b1ac57173853074993a83434e5bdbf4183c2d70ebf7a` |
+| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-win-x64.zip) | `c3289a5737d534bd73a1a4dac60d5a6abd1c6dc26dea49698ee5212d63242d58` |
+| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-win-arm64.zip) | `63a0b1e574485acb10dcf4137926ea9fdd45f95304d32321b86a8041231300ea` |
+| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-linux-x64.tar.gz) | `d58af4b2fbdbb5a26ee18c65b1a9f4f0bbecda63f167c9eaa2d349badad0ed14` |
+| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-linux-arm64.tar.gz) | `b1ef927e146fee8cd5f5cabbd4d7b1d4a00ae30c48decc303c1cd42133b14005` |
+| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-osx-x64.tar.gz) | `9a59ab91040594584187246dd9d5b4a481eb4276a1578c16338f4a52d41dc670` |
+| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.4/bt-osx-arm64.tar.gz) | `7ac2bbc13db8e404ec7987702ae6191788170a83ec9af71eca87d945831cc7a3` |
 
 Extract the archive and keep the native SQLite library beside `bt.exe` (Windows)
 or `bt` (Linux/macOS). No .NET runtime installation is required.
 The SHA256 values above verify the downloaded archives. See the
-[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.3)
+[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.4)
 for details.
 
 ## Main counter walkthrough
+
+To check the executable version or display help:
+
+```text
+> bt --version
+1.0.4
+> bt --help
+Buildtracker 1.0.4 - persistent SQLite build counters
+...
+```
 
 Run these commands from your project directory. In the transcripts below, `>`
 marks the command you enter; the following line is the exact output.
@@ -114,12 +124,30 @@ Quote paths or tags containing spaces.
 
 ## Options
 
+List all named counters and their current values with `bt --print-tags` (or
+`bt --root <DIR> --print-tags`). Each line contains the tag, a tab, and its count,
+with no header. Tags use case-insensitive ASCII alphabetical order, with
+case-sensitive ordering to break ties. The main counter is excluded. For example,
+after the tagged walkthrough above:
+
+```text
+> bt --print-tags
+api	0
+web	1
+```
+
+Listing does not change any counters. An initialized database with no named
+counters produces no output. An uninitialized database reports an error.
+`--print-tags` cannot be combined with `--tag`, `--init`, `--reset`, or `--noinc`.
+
 | Option | Behavior |
 | --- | --- |
 | No operation flag | Increment the selected counter and print the new value. |
 | `--init [COUNT]` | Create or reset the selected counter to COUNT (default: 0). |
 | `--reset [COUNT]` | Reset an existing counter to COUNT (default: 0). |
 | `--noinc` | Print the selected counter without changing it. |
+| `--print-tags` | Print all named counters and values alphabetically without changing them. |
+| `--version` | Print the executable version without accessing the database. |
 | `--nolocktimeout` | Wait indefinitely for database locks instead of timing out after 5 seconds. |
 | `--tag <TAG>` | Select a case-sensitive tagged counter instead of the main counter. |
 | `--root <DIR>` | Use `DIR/.buildtracker`; defaults to the current directory. |
@@ -194,7 +222,7 @@ Release archives are named `bt-<RID>.zip` for Windows and `bt-<RID>.tar.gz`
 for Linux/macOS. Available targets are `win-x64`, `win-arm64`, `linux-x64`,
 `linux-arm64`, `osx-x64`, and `osx-arm64`. Extract the archive and keep its native
 SQLite library alongside the executable. Linux packages target glibc-based
-distributions, rather than Alpine/musl. The v1.0.3 Linux archives are built on
+distributions, rather than Alpine/musl. The v1.0.4 Linux archives are built on
 Ubuntu 18.04 (glibc 2.27), including a source-built SQLite library, and tested on
 Ubuntu 18.04 and Ubuntu 26.04 for both architectures.
 

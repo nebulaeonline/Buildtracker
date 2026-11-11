@@ -25,12 +25,19 @@ reject() {
 
 reject --noinc
 reject --reset
+reject --print-tags
+check 1.0.4 --version
 help_text=$("$executable" --root "$test_root" --help)
-for option in --init --reset --noinc --nolocktimeout --tag --root --help; do
+for option in --init --reset --noinc --nolocktimeout --print-tags --version --tag --root --help 1.0.4; do
     case "$help_text" in *"$option"*) ;; *) fail "Help missing $option" ;; esac
 done
 [ ! -e "$test_root/.buildtracker" ] || fail 'Read/help created storage'
 check 0 --init
+check '' --print-tags
+reject --print-tags --tag api
+reject --print-tags --init
+reject --print-tags --reset
+reject --print-tags --noinc
 check 1
 check 1 --noinc
 check 1 --noinc --nolocktimeout
@@ -90,6 +97,13 @@ while [ "$i" -le 24 ]; do
 done >"$test_root/expected"
 LC_ALL=C sort -n "$test_root"/out-* >"$test_root/actual"
 cmp -s "$test_root/expected" "$test_root/actual" || fail 'Concurrent increments were not unique and consecutive'
+check 24 --noinc
+check 5 --tag Zulu --init 5
+check 7 --tag Alpha --init 7
+check 9 --tag alpha --init 9
+expected_tags=$(printf 'Alpha\t7\nalpha\t9\napi\t1\nmax\t9223372036854775807\nspaces and '\''quotes'\''\t1\nZulu\t5\n')
+check "$expected_tags" --print-tags
+check "$expected_tags" --print-tags --nolocktimeout
 check 24 --noinc
 mkdir "$test_root/component"
 (

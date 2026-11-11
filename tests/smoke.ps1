@@ -16,13 +16,20 @@ function Reject([string[]]$Arguments) {
 try {
     Reject @('--noinc')
     Reject @('--reset')
+    Reject @('--print-tags')
+    Check '1.0.4' @('--version')
     $helpText = (& $Executable --root $testRoot --help) -join "`n"
     if ($LASTEXITCODE -ne 0) { throw 'Help failed' }
-    foreach ($option in @('--init', '--reset', '--noinc', '--nolocktimeout', '--tag', '--root', '--help')) {
+    foreach ($option in @('--init', '--reset', '--noinc', '--nolocktimeout', '--print-tags', '--version', '--tag', '--root', '--help', '1.0.4')) {
         if (!$helpText.Contains($option)) { throw "Help missing $option" }
     }
     if (Test-Path (Join-Path $testRoot '.buildtracker')) { throw 'Read created storage' }
     Check '0' @('--init')
+    Check '' @('--print-tags')
+    Reject @('--print-tags', '--tag', 'api')
+    Reject @('--print-tags', '--init')
+    Reject @('--print-tags', '--reset')
+    Reject @('--print-tags', '--noinc')
     Check '1' @()
     Check '1' @('--noinc')
     Check '1' @('--noinc', '--nolocktimeout')
@@ -80,6 +87,15 @@ try {
     }
     if ($failed) { throw 'Concurrent increment failed' }
     if ((($numbers | Sort-Object) -join ',') -ne ((1..24) -join ',')) { throw 'Concurrent increments were not unique and consecutive' }
+    Check '24' @('--noinc')
+    Check '5' @('--tag', 'Zulu', '--init', '5')
+    Check '7' @('--tag', 'Alpha', '--init', '7')
+    Check '9' @('--tag', 'alpha', '--init', '9')
+    $expectedTags = @("Alpha`t7", "alpha`t9", "api`t1", "max`t9223372036854775807", "spaces and 'quotes'`t1", "Zulu`t5")
+    foreach ($arguments in @(@('--print-tags'), @('--print-tags', '--nolocktimeout'))) {
+        $actualTags = & $Executable --root $testRoot @arguments
+        if ($LASTEXITCODE -ne 0 -or ($actualTags -join "`n") -cne ($expectedTags -join "`n")) { throw 'Tag listing failed' }
+    }
     Check '24' @('--noinc')
     $child = New-Item -ItemType Directory -Path (Join-Path $testRoot 'component')
     Push-Location $child.FullName

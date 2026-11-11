@@ -3,8 +3,9 @@ using Microsoft.Data.Sqlite;
 
 try
 {
+    string version = typeof(Program).Assembly.GetName().Version!.ToString(3);
     string root = Directory.GetCurrentDirectory(), tag = "";
-    bool init = false, reset = false, noinc = false, nolocktimeout = false;
+    bool init = false, reset = false, noinc = false, nolocktimeout = false, printTags = false;
     long count = 0;
     var seen = new HashSet<string>(StringComparer.Ordinal);
     for (int i = 0; i < args.Length; i++)
@@ -15,10 +16,10 @@ try
         {
             case "--help":
             case "-h":
-                Console.WriteLine("""
-                    Buildtracker - persistent SQLite build counters
+                Console.WriteLine($"""
+                    Buildtracker {version} - persistent SQLite build counters
 
-                    Usage: bt [--root <DIR>] [--tag <TAG>] [--nolocktimeout] [--init [COUNT] | --reset [COUNT] | --noinc]
+                    Usage: bt [--root <DIR>] [--tag <TAG>] [--nolocktimeout] [--init [COUNT] | --reset [COUNT] | --noinc | --print-tags]
 
                     No operation flag: increment the selected counter and print its value.
                     Lock waits time out after 5 seconds by default.
@@ -28,12 +29,16 @@ try
                     --tag <TAG>       Select an independent, case-sensitive counter.
                     --root <DIR>      Store data in DIR/.buildtracker (default: current directory).
                     --nolocktimeout   Wait indefinitely for database locks; locking stays enabled.
+                    --print-tags      List named counters alphabetically as TAG<TAB>COUNT.
+                    --version         Print the version without accessing the database.
                     --help, -h        Show this help screen without changing counters.
 
                     Without --tag, select the main counter. COUNT must be an integer from
                     0 to 9223372036854775807. Operation flags cannot be combined.
                     Counters must be initialized before use or reset. Successful counter
                     operations print only the number. Errors go to stderr with exit code 1.
+                    --print-tags excludes the main counter and cannot be combined with --tag
+                    or another operation. It does not change any counter.
 
                     Examples:
                       bt --init                      Initialize the main counter to 0.
@@ -45,9 +50,13 @@ try
                       bt --root .. --tag api --noinc  Read api from the parent project.
                     """);
                 return 0;
+            case "--version":
+                Console.WriteLine(version);
+                return 0;
             case "--root": root = Value(args, ref i, option); break;
             case "--tag": tag = Value(args, ref i, option); break;
             case "--noinc": noinc = true; break;
+            case "--print-tags": printTags = true; break;
             case "--nolocktimeout": nolocktimeout = true; break;
             case "--init":
             case "--reset":
@@ -62,8 +71,10 @@ try
             default: throw new ArgumentException($"Unknown argument: {option}. Use --help for usage.");
         }
     }
-    if ((init ? 1 : 0) + (reset ? 1 : 0) + (noinc ? 1 : 0) > 1)
-        throw new ArgumentException("--init, --reset, and --noinc cannot be combined.");
+    if ((init ? 1 : 0) + (reset ? 1 : 0) + (noinc ? 1 : 0) + (printTags ? 1 : 0) > 1)
+        throw new ArgumentException("--init, --reset, --noinc, and --print-tags cannot be combined.");
+    if (printTags && seen.Contains("--tag"))
+        throw new ArgumentException("--print-tags cannot be combined with --tag.");
 
     string directory = Path.Combine(Path.GetFullPath(root), ".buildtracker");
     string database = Path.Combine(directory, "builds.db");
@@ -73,16 +84,24 @@ try
     using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
     {
         DataSource = database,
-        Mode = init ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite,
+        Mode = init ? SqliteOpenMode.ReadWriteCreate : printTags ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWrite,
         Pooling = false,
         DefaultTimeout = nolocktimeout ? 0 : 5
     }.ToString());
     connection.Open();
     // Acquire the writer reservation before preparing statements, avoiding
     // competing prepared statements retaining read locks during a commit.
-    using var transaction = noinc ? null : connection.BeginTransaction(deferred: false);
+    using var transaction = noinc || printTags ? null : connection.BeginTransaction(deferred: false);
     using var command = connection.CreateCommand();
     command.Transaction = transaction;
+    if (printTags)
+    {
+        command.CommandText = "SELECT tag, count FROM counters WHERE tag <> '' ORDER BY tag COLLATE NOCASE, tag COLLATE BINARY;";
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+            Console.WriteLine($"{reader.GetString(0)}\t{reader.GetInt64(1).ToString(CultureInfo.InvariantCulture)}");
+        return 0;
+    }
     if (init)
     {
         command.CommandText = """
