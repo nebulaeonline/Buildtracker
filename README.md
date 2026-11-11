@@ -102,6 +102,25 @@ on one tag leave the main counter and other tags unchanged.
 1
 ```
 
+### Tag names and limits
+
+`bt` imposes no explicit tag-length limit; practical limits come from your
+operating system, shell command-line limits, and SQLite's text-size limits.
+Tags are case-sensitive and may contain Unicode, spaces, punctuation, quotes,
+and path separators. Tags are stored as database values, so path separators
+have no special meaning. Quote or escape tag names as required by your shell:
+
+```sh
+bt --tag "My App / API" --init
+```
+
+Empty or whitespace-only tags and tags beginning with `--` are rejected.
+Tabs and newlines are accepted within otherwise valid tag names, but
+`--print-tags` prints names without escaping them: tabs separate names from
+counts, and newlines separate records. Tabs or newlines inside a tag therefore
+make that output ambiguous. Avoid them when you need readable or parseable
+tag listings.
+
 ## Running from a subdirectory
 
 For a project rooted at `/work/myapp`, the database is
