@@ -26,13 +26,15 @@ reject() {
 reject --noinc
 reject --reset
 help_text=$("$executable" --root "$test_root" --help)
-for option in --init --reset --noinc --tag --root --help; do
+for option in --init --reset --noinc --nolockout --tag --root --help; do
     case "$help_text" in *"$option"*) ;; *) fail "Help missing $option" ;; esac
 done
 [ ! -e "$test_root/.buildtracker" ] || fail 'Read/help created storage'
 check 0 --init
 check 1
 check 1 --noinc
+check 1 --noinc --nolockout
+reject --nolockout --nolockout
 check 50 --reset 50
 check 50 --noinc
 check 51

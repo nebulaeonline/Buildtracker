@@ -4,6 +4,18 @@
 counters in SQLite. Successful counter operations print only the number and a
 newline. Errors print to stderr and exit with code 1.
 
+Database lock waits time out after **5 seconds** by default. Use `--nolockout`
+to wait indefinitely for a lock instead. SQLite locking and atomic increments
+remain enabled; this flag removes the wait timeout. For example:
+
+```sh
+bt --nolockout
+bt --tag api --nolockout
+```
+
+This option requires a build from the current source; the v1.0.1 downloads below
+do not include `--nolockout`.
+
 ## Download v1.0.1
 
 | Platform | Architecture | Download | SHA256 |
@@ -111,6 +123,7 @@ Quote paths or tags containing spaces.
 | `--init [COUNT]` | Create or reset the selected counter to COUNT (default: 0). |
 | `--reset [COUNT]` | Reset an existing counter to COUNT (default: 0). |
 | `--noinc` | Print the selected counter without changing it. |
+| `--nolockout` | Wait indefinitely for database locks instead of timing out after 5 seconds. |
 | `--tag <TAG>` | Select a case-sensitive tagged counter instead of the main counter. |
 | `--root <DIR>` | Use `DIR/.buildtracker`; defaults to the current directory. |
 | `--help`, `-h` | Display usage, options, and examples. |
@@ -149,7 +162,8 @@ requires prior initialization. `--init`, `--reset`, and `--noinc` are mutually
 exclusive. Both initialization and reset print the resulting value.
 Values range from 0 to 9223372036854775807. Overflow fails without changing the
 counter. SQLite performs each increment atomically, including across processes,
-with a 5-second lock timeout. Avoid resetting counters while builds are running.
+with a 5-second lock wait timeout by default, or no timeout with `--nolockout`.
+Avoid resetting counters while builds are running.
 
 ## Shared folders
 
@@ -238,6 +252,13 @@ sh tests/smoke.sh ./artifacts/osx-arm64/bt
 Both scripts cover main and tagged counters, resets, invalid arguments, help,
 overflow, concurrent increments, and execution from subdirectories. They use
 temporary directories and clean up their test databases on exit.
+
+To verify the default timeout and `--nolockout` with real held database locks,
+run the optional Python standard-library test against a current build:
+
+```sh
+python3 tests/lock-wait.py ./artifacts/linux-x64/bt
+```
 
 ## License
 

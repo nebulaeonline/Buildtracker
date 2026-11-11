@@ -18,13 +18,15 @@ try {
     Reject @('--reset')
     $helpText = (& $Executable --root $testRoot --help) -join "`n"
     if ($LASTEXITCODE -ne 0) { throw 'Help failed' }
-    foreach ($option in @('--init', '--reset', '--noinc', '--tag', '--root', '--help')) {
+    foreach ($option in @('--init', '--reset', '--noinc', '--nolockout', '--tag', '--root', '--help')) {
         if (!$helpText.Contains($option)) { throw "Help missing $option" }
     }
     if (Test-Path (Join-Path $testRoot '.buildtracker')) { throw 'Read created storage' }
     Check '0' @('--init')
     Check '1' @()
     Check '1' @('--noinc')
+    Check '1' @('--noinc', '--nolockout')
+    Reject @('--nolockout', '--nolockout')
     Check '50' @('--reset', '50')
     Check '50' @('--noinc')
     Check '51' @()
