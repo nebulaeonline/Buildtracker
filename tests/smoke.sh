@@ -66,17 +66,20 @@ check 0 --init
 
 # Wait for every process before allowing the cleanup trap to remove its files.
 pids=''
+failed=0
 i=1
 while [ "$i" -le 24 ]; do
     "$executable" --root "$test_root" >"$test_root/out-$i" 2>"$test_root/err-$i" &
     pids="$pids $!"
     i=$((i + 1))
 done
-failed=0
 for pid in $pids; do
     wait "$pid" || failed=1
 done
-[ "$failed" -eq 0 ] || fail 'Concurrent increment failed'
+if [ "$failed" -ne 0 ]; then
+    cat "$test_root"/err-* >&2
+    fail 'Concurrent increment failed'
+fi
 i=1
 while [ "$i" -le 24 ]; do
     printf '%s\n' "$i"

@@ -75,7 +75,11 @@ try
         DefaultTimeout = 5
     }.ToString());
     connection.Open();
+    // Acquire the writer reservation before preparing statements, avoiding
+    // competing prepared statements retaining read locks during a commit.
+    using var transaction = noinc ? null : connection.BeginTransaction(deferred: false);
     using var command = connection.CreateCommand();
+    command.Transaction = transaction;
     if (init)
     {
         command.CommandText = """
@@ -105,6 +109,7 @@ try
     object? result = command.ExecuteScalar();
     if (result is null)
         throw new InvalidOperationException("Counter is not initialized or has reached the maximum value. Run --init to initialize or reset it.");
+    transaction?.Commit();
     Console.WriteLine(Convert.ToInt64(result, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture));
     return 0;
 }

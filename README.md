@@ -162,6 +162,12 @@ they do not provide a single shared database for coordinating increments.
 
 ## Build
 
+Release archives are named `bt-<RID>.zip` for Windows and `bt-<RID>.tar.gz`
+for Linux/macOS. Available targets are `win-x64`, `win-arm64`, `linux-x64`,
+`linux-arm64`, `osx-x64`, and `osx-arm64`. Extract the archive and keep its native
+SQLite library alongside the executable. Linux packages target glibc-based
+distributions, rather than Alpine/musl.
+
 Install the .NET 10 SDK and the Native AOT compiler prerequisites for your OS.
 Publish on the target OS (Native AOT does not support cross-OS compilation):
 
@@ -193,6 +199,26 @@ sh tests/smoke.sh ./artifacts/osx-arm64/bt
 Both scripts cover main and tagged counters, resets, invalid arguments, help,
 overflow, concurrent increments, and execution from subdirectories. They use
 temporary directories and clean up their test databases on exit.
+
+### Build the six-target release over SSH
+
+The controller script uses the existing Pivot SSH target configuration, pinned
+host keys, and installed toolchains. It stages source on each host's local disk,
+publishes Native AOT, checks the executable architecture, runs the smoke tests,
+packages the executable with SQLite, README, and LICENSE, and reruns the smoke
+tests after extracting the archive. macOS x64 builds and tests use Rosetta on
+the ARM64 Mac.
+
+```powershell
+python scripts/release.py --config J:/coding/Pivot/artifacts/validation-config/RobPC.json
+# Rebuild selected targets:
+python scripts/release.py --config J:/coding/Pivot/artifacts/validation-config/RobPC.json --rids linux-x64 osx-arm64
+```
+
+Packages, per-target build/test logs, a source snapshot, and `SHA256SUMS` are
+written to `artifacts/releases/<UTC timestamp>/`. The script uses SSH/SCP and
+Python on the controller and hosts, plus PowerShell 7 on Windows build hosts or
+POSIX sh on Linux/macOS. It does not publish or upload a public release.
 
 ## License
 

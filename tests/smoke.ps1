@@ -64,14 +64,18 @@ try {
         $start.ArgumentList.Add($testRoot)
         [Diagnostics.Process]::Start($start)
     }
+    $failed = $false
     $numbers = foreach ($process in $processes) {
         $output = $process.StandardOutput.ReadToEnd()
         $errorOutput = $process.StandardError.ReadToEnd()
         $process.WaitForExit()
-        if ($process.ExitCode -ne 0) { throw "Concurrent increment failed: $errorOutput" }
-        [long]::Parse($output.Trim())
+        if ($process.ExitCode -ne 0) {
+            $failed = $true
+            [Console]::Error.WriteLine("Concurrent increment failed: $errorOutput")
+        } else { [long]::Parse($output.Trim()) }
         $process.Dispose()
     }
+    if ($failed) { throw 'Concurrent increment failed' }
     if ((($numbers | Sort-Object) -join ',') -ne ((1..24) -join ',')) { throw 'Concurrent increments were not unique and consecutive' }
     Check '24' @('--noinc')
     $child = New-Item -ItemType Directory -Path (Join-Path $testRoot 'component')
