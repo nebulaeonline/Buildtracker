@@ -6,16 +6,20 @@ newline. Errors print to stderr and exit with code 1.
 
 ## Download v1.0.0
 
-| Platform | x64 | ARM64 |
-| --- | --- | --- |
-| Windows | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-x64.zip) | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-arm64.zip) |
-| Linux (glibc) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-x64.tar.gz) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-arm64.tar.gz) |
-| macOS | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-x64.tar.gz) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-arm64.tar.gz) |
+| Platform | Architecture | Download | SHA256 |
+| --- | --- | --- | --- |
+| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-x64.zip) | `c56cb0f8e2be44f29f1bd18b841aabd7d9ec43c4df67d3c51a98a24d5528e486` |
+| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-arm64.zip) | `1c3cc16697ac0daa27fd364202cd820458bc374b7b6fce1458d6f13129d04f1e` |
+| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-x64.tar.gz) | `f4dfc863dbb3d3b4abc5c22cee6a5b4d67dab84c89ca0aa52d979888af48e5c3` |
+| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-arm64.tar.gz) | `12fd8956ed8725678411e5a4e99597b706e81a0798db0c8a6aca5d019b4dd55c` |
+| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-x64.tar.gz) | `2f757a32f8bf9a6dd92d42a3b7a6bfe6f488f81d2b987a4c2562f9d1ecff54fb` |
+| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-arm64.tar.gz) | `7457381a3ee8b33b21a2d48fb15cf318624e5ad3dfef6d09b49f74fef0833b6f` |
 
 Extract the archive and keep the native SQLite library beside `bt.exe` (Windows)
 or `bt` (Linux/macOS). No .NET runtime installation is required.
-See the [release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.0)
-and [SHA256 checksums](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/SHA256SUMS).
+The SHA256 values above verify the downloaded archives. See the
+[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.0)
+for details.
 
 ## Main counter walkthrough
 
