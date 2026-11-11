@@ -4,6 +4,19 @@
 counters in SQLite. Successful counter operations print only the number and a
 newline. Errors print to stderr and exit with code 1.
 
+## Download v1.0.0
+
+| Platform | x64 | ARM64 |
+| --- | --- | --- |
+| Windows | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-x64.zip) | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-win-arm64.zip) |
+| Linux (glibc) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-x64.tar.gz) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-linux-arm64.tar.gz) |
+| macOS | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-x64.tar.gz) | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/bt-osx-arm64.tar.gz) |
+
+Extract the archive and keep the native SQLite library beside `bt.exe` (Windows)
+or `bt` (Linux/macOS). No .NET runtime installation is required.
+See the [release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.0)
+and [SHA256 checksums](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.0/SHA256SUMS).
+
 ## Main counter walkthrough
 
 Run these commands from your project directory. In the transcripts below, `>`
