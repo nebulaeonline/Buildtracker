@@ -213,26 +213,6 @@ Both scripts cover main and tagged counters, resets, invalid arguments, help,
 overflow, concurrent increments, and execution from subdirectories. They use
 temporary directories and clean up their test databases on exit.
 
-### Build the six-target release over SSH
-
-The controller script uses the existing Pivot SSH target configuration, pinned
-host keys, and installed toolchains. It stages source on each host's local disk,
-publishes Native AOT, checks the executable architecture, runs the smoke tests,
-packages the executable with SQLite, README, and LICENSE, and reruns the smoke
-tests after extracting the archive. macOS x64 builds and tests use Rosetta on
-the ARM64 Mac.
-
-```powershell
-python scripts/release.py --config J:/coding/Pivot/artifacts/validation-config/RobPC.json
-# Rebuild selected targets:
-python scripts/release.py --config J:/coding/Pivot/artifacts/validation-config/RobPC.json --rids linux-x64 osx-arm64
-```
-
-Packages, per-target build/test logs, a source snapshot, and `SHA256SUMS` are
-written to `artifacts/releases/<UTC timestamp>/`. The script uses SSH/SCP and
-Python on the controller and hosts, plus PowerShell 7 on Windows build hosts or
-POSIX sh on Linux/macOS. It does not publish or upload a public release.
-
 ## License
 
 Buildtracker is distributed under the [MIT License](LICENSE).
