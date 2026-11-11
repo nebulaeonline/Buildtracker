@@ -13,24 +13,21 @@ bt --nolockout
 bt --tag api --nolockout
 ```
 
-This option requires a build from the current source; the v1.0.1 downloads below
-do not include `--nolockout`.
-
-## Download v1.0.1
+## Download v1.0.2
 
 | Platform | Architecture | Download | SHA256 |
 | --- | --- | --- | --- |
-| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-win-x64.zip) | `c56cb0f8e2be44f29f1bd18b841aabd7d9ec43c4df67d3c51a98a24d5528e486` |
-| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-win-arm64.zip) | `1c3cc16697ac0daa27fd364202cd820458bc374b7b6fce1458d6f13129d04f1e` |
-| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-linux-x64.tar.gz) | `ef1126319e80bf178c96cbcec44bf959572195489c1b03751e3ceca5e0bfc914` |
-| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-linux-arm64.tar.gz) | `d9d5f03de472c7b7b8470d08e8b25a7d046b1d20c9b1f296ab8fcb7803c2299f` |
-| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-osx-x64.tar.gz) | `2f757a32f8bf9a6dd92d42a3b7a6bfe6f488f81d2b987a4c2562f9d1ecff54fb` |
-| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.1/bt-osx-arm64.tar.gz) | `7457381a3ee8b33b21a2d48fb15cf318624e5ad3dfef6d09b49f74fef0833b6f` |
+| Windows | x64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-win-x64.zip) | `192f63089649baa160dd166da9e2123f4a34ac75aa739c4dd13d4f3c0e56e1b2` |
+| Windows | ARM64 | [ZIP](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-win-arm64.zip) | `61ad9bbc07983858d6ef2644e98786d1d820a17473e3fe17101faa020c4acbcb` |
+| Linux (glibc) | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-linux-x64.tar.gz) | `4a61e6306200edab920dabeed7ccdb2d4fb8bf3c17fe46a9a0a4beaed0aba886` |
+| Linux (glibc) | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-linux-arm64.tar.gz) | `6554309c9d00edb12a9c628bebed1775733ed0bbdd972c8eb4a3f996ccd625fe` |
+| macOS | x64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-osx-x64.tar.gz) | `e403e409df254cb9d8081cfce848a79b3309606582845426b2ae708a0d0039fc` |
+| macOS | ARM64 | [tar.gz](https://github.com/nebulaeonline/Buildtracker/releases/download/v1.0.2/bt-osx-arm64.tar.gz) | `85e2ab27a8f8cfd1cf4255cb74880e52826767b73d1aef518ecaf1a81cff8bd4` |
 
 Extract the archive and keep the native SQLite library beside `bt.exe` (Windows)
 or `bt` (Linux/macOS). No .NET runtime installation is required.
 The SHA256 values above verify the downloaded archives. See the
-[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.1)
+[release notes](https://github.com/nebulaeonline/Buildtracker/releases/tag/v1.0.2)
 for details.
 
 ## Main counter walkthrough
@@ -197,7 +194,7 @@ Release archives are named `bt-<RID>.zip` for Windows and `bt-<RID>.tar.gz`
 for Linux/macOS. Available targets are `win-x64`, `win-arm64`, `linux-x64`,
 `linux-arm64`, `osx-x64`, and `osx-arm64`. Extract the archive and keep its native
 SQLite library alongside the executable. Linux packages target glibc-based
-distributions, rather than Alpine/musl. The v1.0.1 Linux archives are built on
+distributions, rather than Alpine/musl. The v1.0.2 Linux archives are built on
 Ubuntu 18.04 (glibc 2.27), including a source-built SQLite library, and tested on
 Ubuntu 18.04 and Ubuntu 26.04 for both architectures.
 
